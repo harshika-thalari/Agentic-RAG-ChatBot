@@ -3,13 +3,14 @@ import Sidebar from './components/Sidebar';
 import ChatWindow from './components/ChatWindow';
 import MessageInput from './components/MessageInput';
 import LoginPage from './components/LoginPage';
-import { getProfile, questionStream } from './api/mockApi';
+import { getProfile, questionStream, getFollowupQuestions } from './api/mockApi';
 import './index.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [messages, setMessages] = useState([]);
   const [activeChatId, setActiveChatId] = useState(null);
+  const [followupQuestions, setFollowupQuestions] = useState([]);
   const DUMMY_USER_EMAIL = "harshika@example.com";
   const DUMMY_USER_ID = "user-123";
 
@@ -27,6 +28,7 @@ function App() {
   const handleSendMessage = async (input) => {
     const userMessage = { id: "user-" + Date.now(), sender: 'user', text: input };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setFollowupQuestions([]); 
 
     const response = await questionStream({
       query: input,
@@ -42,19 +44,24 @@ function App() {
     if (!activeChatId) {
       setActiveChatId(response.thread_id);
     }
+
+    const followupResponse = await getFollowupQuestions({ response: response.response_text });
+    setFollowupQuestions(followupResponse.followup_questions);
   };
 
   const handleModifiedMessage = (originalMessageId, modifiedMessage) => {
     setMessages(prevMessages => {
-      // Find the index of the original message
       const index = prevMessages.findIndex(msg => msg.id === originalMessageId);
       if (index !== -1) {
-        // Create a new array with the modified message inserted after the original
         const newMessages = [...prevMessages];
         newMessages.splice(index + 1, 0, modifiedMessage);
         return newMessages;
       }
       return prevMessages;
+    });
+
+    getFollowupQuestions({ response: modifiedMessage.text }).then(response => {
+      setFollowupQuestions(response.followup_questions);
     });
   };
 
@@ -64,6 +71,20 @@ function App() {
       { id: "ai-1", sender: 'ai', text: `You've selected chat ID: ${chatId}.` },
       { id: "ai-2", sender: 'ai', text: `This is a dummy chat history.` },
     ]);
+    setFollowupQuestions([]);
+  };
+
+  const handleRefreshChat = () => {
+    setMessages([
+      { id: "ai-1", sender: 'ai', text: `Chat refreshed. This is the latest message.` },
+      { id: "ai-2", sender: 'ai', text: `A dummy message to simulate chat history.` },
+    ]);
+    setFollowupQuestions([]);
+  };
+
+  const handleClearChat = () => {
+    setMessages([]);
+    setFollowupQuestions([]);
   };
 
   if (!isLoggedIn) {
@@ -78,8 +99,13 @@ function App() {
           messages={messages} 
           threadId={activeChatId}
           onModifiedMessage={handleModifiedMessage}
+          onRefreshChat={handleRefreshChat}
+          onClearChat={handleClearChat}
         />
-        <MessageInput onSendMessage={handleSendMessage} />
+        <MessageInput 
+          onSendMessage={handleSendMessage} 
+          followupQuestions={followupQuestions}
+        />
       </div>
     </div>
   );

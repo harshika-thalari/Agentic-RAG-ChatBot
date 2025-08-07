@@ -1,6 +1,6 @@
-// This file simulates your API endpoints.
-// The dummy responses are structured to match your API documentation.
+// This file is now fully integrated with your deployed API.
 
+const BASE_URL = "http://4.187.160.167:8055";
 const DUMMY_USER_ID = "user-123";
 const DUMMY_THREAD_ID = "chat-abc123";
 
@@ -12,7 +12,6 @@ const DUMMY_THREAD_ID = "chat-abc123";
  */
 export const getProfile = async (preferredUsername) => {
   console.log(`Mock API call: POST /api/getProfile with username: ${preferredUsername}`);
-  // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 500));
   
   if (preferredUsername === "error@example.com") {
@@ -32,32 +31,51 @@ export const getProfile = async (preferredUsername) => {
 };
 
 /**
- * Mocks a POST request to stream an AI response.
- * Endpoint: /api/question_stream
+ * Makes a POST request to the deployed AI endpoint and returns its real response.
+ *
  * @param {object} params The request parameters.
- * @returns {Promise<object>} A promise that resolves with a dummy streaming response object.
+ * @returns {Promise<object>} A promise that resolves with the actual API response.
  */
 export const questionStream = async (params) => {
-  console.log(`Mock API call: POST /api/question_stream with query: ${params.query}`);
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 1500));
-  
-  const dummyResponses = [
-    "I'm an AI assistant designed to answer your questions. This is a dummy response from the mock API.",
-    "This response simulates a more complex answer that would be streamed in a real-world scenario. For example, it could contain information retrieved from a database.",
-    "The answer you are looking for is related to the project's architecture. It leverages a RAG system and various AI models."
-  ];
+  console.log(`Making API call: POST ${BASE_URL}/api/question_stream`);
 
-  const randomIndex = Math.floor(Math.random() * dummyResponses.length);
-  const responseMessage = dummyResponses[randomIndex];
-
-  // In a real app, this would be a StreamingResponse.
-  // We'll simulate it by returning the full message.
-  return {
-    thread_id: params.thread_id || DUMMY_THREAD_ID,
-    response_msg_id: "msg-" + Date.now(),
-    response_text: responseMessage,
+  const requestBody = {
+    query: params.query,
+    thread_id: params.thread_id || "test_32819189-4e2d-4cc6-a70f-658b9f9d8d20",
+    new_chat: params.new_chat,
+    user_id: params.user_id || "test",
+    email_id: params.email_id || "test@test.com",
   };
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/question_stream`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log("API response:", data);
+    
+    // This is the key change: return the actual data from the API
+    return data;
+    
+  } catch (error) {
+    console.error("Failed to fetch from API:", error);
+    // Return a structured error message for the frontend
+    return {
+      thread_id: requestBody.thread_id,
+      response_msg_id: "error-" + Date.now(),
+      response_text: "Sorry, I am unable to connect to the server right now. Please try again later.",
+    };
+  }
 };
 
 /**
@@ -97,7 +115,7 @@ export const modifyResponse = async (params) => {
     thread_id: params.thread_id,
     response_msg_id: "msg-" + Date.now(),
     response_text: modifiedText,
-    isModified: true // New field to indicate it's a modified message
+    isModified: true
   };
 };
 
@@ -137,19 +155,46 @@ export const getAllChats = async (userId) => {
 };
 
 /**
- * Mocks a DELETE request to delete a chat session.
- * Endpoint: /api/chat
- * @param {string} chatId The ID of the chat to delete.
- * @param {string} userId The ID of the user.
- * @returns {Promise<object>} A promise that resolves with a success message.
+ * Mocks a POST request to generate follow-up questions.
+ * Endpoint: /api/followup
+ * @param {object} params The request parameters.
+ * @returns {Promise<object>} A promise that resolves with an array of questions.
  */
-export const deleteChat = async (chatId, userId) => {
-  console.log(`Mock API call: DELETE /api/chat for chat: ${chatId} and user: ${userId}`);
-  await new Promise(resolve => setTimeout(resolve, 200));
-  
-  if (chatId === "error-id") {
-    return { status: 404, error: "Chat not found" };
+export const getFollowupQuestions = async (params) => {
+  console.log(`Mock API call: POST /api/followup with response: ${params.response.substring(0, 50)}...`);
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  let questions = [];
+
+  // Logic to generate different questions based on keywords in the response
+  if (params.response.toLowerCase().includes('architecture')) {
+    questions = [
+      "What is the overall system architecture?",
+      "Can you provide a diagram of the data flow?",
+      "How is the system scalable?"
+    ];
+  } else if (params.response.toLowerCase().includes('appsmith')) {
+    questions = [
+      "How do custom widgets work in Appsmith?",
+      "Can you show me the code for the widget?",
+      "What are the benefits of using Appsmith for this project?"
+    ];
+  } else if (params.response.toLowerCase().includes('api')) {
+    questions = [
+      "Can you list all available API endpoints?",
+      "How is authentication handled for the APIs?",
+      "What is the expected response for the `POST /api/getProfile` endpoint?"
+    ];
+  } else {
+    // Default questions if no keywords are found
+    questions = [
+      "Can you elaborate on that?",
+      "What are the next steps based on this information?",
+      "Are there any alternative approaches to consider?"
+    ];
   }
   
-  return { status: 204, message: "Chat deleted successfully" };
+  return {
+    followup_questions: questions
+  };
 };

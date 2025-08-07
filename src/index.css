@@ -9,7 +9,11 @@
   --border-color: #dddddd;
   --primary-gradient: linear-gradient(90deg, #66a7ff, #338aff);
   --secondary-gradient: linear-gradient(90deg, #ff785e, #fa5252);
-  --modified-color: #ffc107; /* New color for "Modified" label */
+  --modified-color: #ffc107;
+  --followup-bg-color: #f8f9fa;
+  --followup-shadow: rgba(0, 0, 0, 0.1);
+  --feedback-bg-color: #d4edda;
+  --feedback-text-color: #155724;
 }
 
 body {
@@ -100,23 +104,83 @@ body {
   flex-direction: column;
 }
 
+.chat-window-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: var(--main-color);
+}
+
+.chat-window-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: #f8f9fa;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chat-window-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  background-color: var(--main-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.chat-action-btn .icon {
+  font-size: 16px;
+}
+
+.chat-action-btn:hover {
+  background-color: #e9ecef;
+}
+
+.chat-action-btn.clear-btn {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.chat-action-btn.clear-btn:hover {
+  background-color: #dc3545;
+  color: var(--main-color);
+}
+
 .chat-window {
   flex-grow: 1;
   overflow-y: auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  background-color: var(--main-color);
 }
 
 /* --- Message Styling --- */
 .message {
-  padding: 12px 18px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+  padding: 18px 22px;
+  border-radius: 12px;
+  margin-bottom: 15px;
   max-width: 70%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  position: relative; /* Needed for absolute positioning of hover menu */
+  position: relative;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .user-message {
@@ -133,21 +197,54 @@ body {
   border-bottom-left-radius: 4px;
 }
 
+/* --- Rating Feedback Message --- */
+.rating-feedback-container {
+  position: absolute;
+  top: -10px;
+  right: 15px;
+  z-index: 10;
+  pointer-events: none;
+  animation: fadeout 2.5s forwards;
+}
+
+.rating-feedback-message {
+  background-color: var(--feedback-bg-color);
+  color: var(--feedback-text-color);
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeout {
+  0% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
+
 .input-area {
   display: flex;
-  padding: 15px;
+  flex-direction: column;
+  padding: 20px;
   border-top: 1px solid var(--border-color);
   background-color: var(--main-color);
 }
 
+.input-container {
+  display: flex;
+  width: 100%;
+}
+
 .input-area input {
   flex-grow: 1;
-  padding: 12px 15px;
-  border-radius: 20px;
+  padding: 15px 20px;
+  border-radius: 25px;
   border: 1px solid var(--border-color);
   background-color: #f8f9fa;
   color: var(--text-color);
-  font-size: 15px;
+  font-size: 16px;
   outline: none;
   transition: border-color 0.3s ease;
 }
@@ -161,14 +258,15 @@ body {
 }
 
 .input-area button {
-  padding: 10px 18px;
-  margin-left: 10px;
+  padding: 12px 22px;
+  margin-left: 15px;
   border: none;
-  border-radius: 20px;
+  border-radius: 25px;
   background-color: var(--secondary-color);
   color: #fff;
   cursor: pointer;
   font-weight: 500;
+  font-size: 16px;
   transition: background-color 0.3s ease;
 }
 
@@ -261,11 +359,10 @@ body {
   background-color: #0056b3;
 }
 
-
 /* --- New Styles for Hover & Dropdowns --- */
 .message-actions {
   position: absolute;
-  top: -20px; /* Position above the message bubble */
+  top: -20px;
   right: 0;
   display: flex;
   gap: 10px;
@@ -325,4 +422,35 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 5px;
+}
+
+/* --- Follow-up Questions Styles --- */
+.followup-questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+  justify-content: center;
+}
+
+.followup-question-btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  background-color: var(--followup-bg-color);
+  font-size: 16px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  flex-grow: 1;
+  text-align: center;
+  max-width: 30%;
+  box-shadow: 0 4px 8px var(--followup-shadow);
+}
+
+.followup-question-btn:hover {
+  background-color: #e9ecef;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px var(--followup-shadow);
 }
