@@ -1,19 +1,18 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { modifyResponse, rateMessage } from '../api/mockApi';
-
+ 
 const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onClearChat }) => {
   const chatWindowRef = useRef(null);
   const [hoveredMessageId, setHoveredMessageId] = useState(null);
   const [modifyMenuOpen, setModifyMenuOpen] = useState(null);
-  const [rateMenuOpen, setRateMenuOpen] = useState(null);
   const [ratingFeedback, setRatingFeedback] = useState(null);
-
+ 
   useEffect(() => {
     if (chatWindowRef.current) {
       chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
     }
   }, [messages, ratingFeedback]);
-
+ 
   useEffect(() => {
     if (ratingFeedback) {
       const timer = setTimeout(() => {
@@ -22,11 +21,11 @@ const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onCl
       return () => clearTimeout(timer);
     }
   }, [ratingFeedback]);
-
+ 
   const handleModifyClick = (messageId, action) => {
     const originalMessage = messages.find(msg => msg.id === messageId);
     if (!originalMessage) return;
-
+ 
     modifyResponse({
       response: originalMessage.text,
       action: action,
@@ -38,11 +37,11 @@ const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onCl
         text: response.response_text,
         isModified: true
       };
-      onModifiedMessage(originalMessageId, modifiedMessage);
+      onModifiedMessage(originalMessage.id, modifiedMessage);
       setModifyMenuOpen(null);
     });
   };
-
+ 
   const handleRateClick = (messageId, rating) => {
     rateMessage({
       response_msg_id: messageId,
@@ -51,10 +50,31 @@ const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onCl
     }).then(() => {
       const feedbackText = rating === 'up' ? 'Rating saved! 👍' : 'Rating saved! 👎';
       setRatingFeedback({ text: feedbackText, messageId });
-      setRateMenuOpen(null);
     });
   };
-
+ 
+  const handleCopyClick = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setRatingFeedback({ text: 'Copied to clipboard!', messageId: null });
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+    });
+  };
+ 
+  const handleShareClick = (messageId) => {
+    const message = messages.find(msg => msg.id === messageId);
+    if (navigator.share) {
+      navigator.share({
+        title: 'AI Chat Response',
+        text: message.text,
+      }).catch(err => console.error('Failed to share:', err));
+    } else {
+      console.log('Web Share API not supported. Message ID:', messageId);
+      // Fallback for browsers that don't support the API
+      setRatingFeedback({ text: 'Share functionality not available.', messageId });
+    }
+  };
+ 
   const renderModifyMenu = (messageId) => {
     const options = ["shorter", "longer", "more_professional", "more_casual", "simpler"];
     return (
@@ -71,24 +91,21 @@ const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onCl
       </div>
     );
   };
-
-  const renderRateMenu = (messageId) => {
-    const options = ["up", "down"];
+ 
+  const renderShareMenu = (messageId) => {
+    const message = messages.find(msg => msg.id === messageId);
     return (
       <div className="dropdown-menu">
-        {options.map(option => (
-          <div
-            key={option}
-            className="dropdown-item"
-            onClick={() => handleRateClick(messageId, option)}
-          >
-            {option === 'up' ? '👍' : '👎'}
-          </div>
-        ))}
+        <div className="dropdown-item" onClick={() => handleCopyClick(message.text)}>
+          Copy
+        </div>
+        <div className="dropdown-item" onClick={() => handleShareClick(messageId)}>
+          Share
+        </div>
       </div>
     );
   };
-
+ 
   return (
     <div className="chat-window-container">
       <div className="chat-window-header">
@@ -108,41 +125,41 @@ const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onCl
             key={msg.id || index}
             className={`message ${msg.sender === 'user' ? 'user-message' : 'ai-message'}`}
             onMouseEnter={() => setHoveredMessageId(msg.id)}
-            onMouseLeave={() => {
-              setHoveredMessageId(null);
-              setModifyMenuOpen(null);
-              setRateMenuOpen(null);
-            }}
+            onMouseLeave={() => setHoveredMessageId(null)}
           >
             {msg.isModified && <div className="modified-label">Modified*</div>}
             {msg.text}
-            {msg.sender === 'ai' && hoveredMessageId === msg.id && (
-              <div className="message-actions">
-                <div className="action-menu">
-                  <div
-                    className="action-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setModifyMenuOpen(modifyMenuOpen === msg.id ? null : msg.id);
-                      setRateMenuOpen(null);
-                    }}
-                  >
-                    📝
+            {msg.sender === 'ai' && (hoveredMessageId === msg.id || modifyMenuOpen === msg.id) && (
+              <div className="message-actions-new">
+                <div className="action-row">
+                  <div className="action-group">
+                    <button className="action-icon-new" onClick={() => handleRateClick(msg.id, 'up')}>
+                      👍
+                    </button>
+                    <button className="action-icon-new" onClick={() => handleRateClick(msg.id, 'down')}>
+                      👎
+                    </button>
                   </div>
-                  {modifyMenuOpen === msg.id && renderModifyMenu(msg.id)}
-                </div>
-                <div className="action-menu">
-                  <div
-                    className="action-button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setRateMenuOpen(rateMenuOpen === msg.id ? null : msg.id);
-                      setModifyMenuOpen(null);
-                    }}
-                  >
-                    ⭐
+                  <div className="action-group">
+                    <button className="action-icon-new" onClick={() => handleCopyClick(msg.text)}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <button className="action-icon-new">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                    </button>
+                    <div className="action-menu">
+                      <button
+                        className="action-icon-new"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setModifyMenuOpen(modifyMenuOpen === msg.id ? null : msg.id);
+                        }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-repeat"><polyline points="17 1 21 5 17 9"></polyline><path d="M21 5H3v4"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M3 19h18v-4"></path></svg>
+                      </button>
+                      {modifyMenuOpen === msg.id && renderModifyMenu(msg.id)}
+                    </div>
                   </div>
-                  {rateMenuOpen === msg.id && renderRateMenu(msg.id)}
                 </div>
               </div>
             )}
@@ -157,5 +174,6 @@ const ChatWindow = ({ messages, threadId, onModifiedMessage, onRefreshChat, onCl
     </div>
   );
 };
-
+ 
 export default ChatWindow;
+ 

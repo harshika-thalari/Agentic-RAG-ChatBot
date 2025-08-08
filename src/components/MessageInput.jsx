@@ -1,44 +1,55 @@
 import React, { useState } from 'react';
 
-const MessageInput = ({ onSendMessage, followupQuestions }) => {
+// We receive onSendMessage, followupQuestions, and isLoading as props from App.jsx
+const MessageInput = ({ onSendMessage, followupQuestions, isLoading }) => {
   const [input, setInput] = useState('');
 
-  const handleSend = (e) => {
+  // This is the function that handles the form submission
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (input.trim()) {
+    if (input.trim() && !isLoading) {
       onSendMessage(input);
       setInput('');
     }
   };
 
+  // This function handles clicking on a follow-up question
   const handleFollowupClick = (question) => {
-    onSendMessage(question);
-    setInput('');
+    if (!isLoading) {
+        onSendMessage(question);
+        setInput('');
+    }
   };
 
   return (
     <div className="input-area">
-      {followupQuestions.length > 0 && (
+      {followupQuestions && followupQuestions.length > 0 && (
         <div className="followup-questions">
           {followupQuestions.map((question, index) => (
             <button
               key={index}
               className="followup-question-btn"
               onClick={() => handleFollowupClick(question)}
+              disabled={isLoading}
             >
               {question}
             </button>
           ))}
         </div>
       )}
-      <form className="input-container" onSubmit={handleSend}>
+
+      {/* The form's onSubmit now correctly points to our defined function */}
+      <form className="input-container" onSubmit={handleFormSubmit}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Send a message..."
+          placeholder={isLoading ? "Waiting for response..." : "Send a message..."}
+          disabled={isLoading}
         />
-        <button type="submit">Send</button>
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? '...' : 'Send'}
+        </button>
       </form>
     </div>
   );
