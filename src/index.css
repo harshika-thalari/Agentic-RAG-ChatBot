@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
- 
+
+/* --- Root Variables --- */
 :root {
   --bg-color: #f0f2f5;
   --main-color: #ffffff;
@@ -15,7 +16,8 @@
   --feedback-bg-color: #d4edda;
   --feedback-text-color: #155724;
 }
- 
+
+/* --- Base & Layout --- */
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -25,20 +27,20 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
- 
+
 #root {
   display: flex;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
 }
- 
+
 .app-container {
   display: flex;
   height: 100%;
   width: 100%;
 }
- 
+
 .sidebar {
   width: 300px;
   background-color: var(--main-color);
@@ -47,70 +49,26 @@ body {
   display: flex;
   flex-direction: column;
 }
- 
+
 .chat-list {
   flex-grow: 1;
   overflow-y: auto;
   margin-top: 20px;
 }
- 
-.chat-item {
-  display: flex;
-  align-items: center;
-  padding: 15px;
-  margin-bottom: 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  background-color: #e9ecef;
-  color: var(--text-color);
-  transition: background-color 0.3s ease;
-}
- 
-.chat-item:hover {
-  background-color: #dee2e6;
-}
- 
-.chat-icon {
-  width: 35px;
-  height: 35px;
-  background-color: var(--secondary-color);
-  color: #fff;
-  border-radius: 50%;
-  margin-right: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 18px;
-}
- 
-.chat-info h4 {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 500;
-}
- 
-.chat-info p {
-  margin: 0;
-  font-size: 11px;
-  color: var(--placeholder-color);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
- 
+
 .main-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
- 
+
 .chat-window-container {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   background-color: var(--main-color);
 }
- 
+
 .chat-window-header {
   display: flex;
   justify-content: space-between;
@@ -119,18 +77,18 @@ body {
   border-bottom: 1px solid var(--border-color);
   background-color: #f8f9fa;
 }
- 
+
 .header-title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
 }
- 
+
 .chat-window-actions {
   display: flex;
   gap: 10px;
 }
- 
+
 .chat-action-btn {
   display: flex;
   align-items: center;
@@ -144,61 +102,157 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
- 
+
 .chat-action-btn .icon {
   font-size: 16px;
 }
- 
+
 .chat-action-btn:hover {
   background-color: #e9ecef;
 }
- 
+
 .chat-action-btn.clear-btn {
   border-color: #dc3545;
   color: #dc3545;
 }
- 
+
 .chat-action-btn.clear-btn:hover {
   background-color: #dc3545;
   color: var(--main-color);
 }
- 
+
 .chat-window {
   flex-grow: 1;
   overflow-y: auto;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-x: hidden;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  height: 0; /* This is key - forces flex-grow to work properly */
-  min-height: 0; /* Allows shrinking */
-}
- 
-/* Optional: Add smooth scrolling */
-.chat-window {
+  height: 0;
+  min-height: 0;
   scroll-behavior: smooth;
 }
- 
-/* Optional: Custom scrollbar styling */
+
 .chat-window::-webkit-scrollbar {
   width: 8px;
 }
- 
+
 .chat-window::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
- 
+
 .chat-window::-webkit-scrollbar-thumb {
   background: #c1c1c1;
   border-radius: 10px;
 }
- 
+
 .chat-window::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
- 
- 
+
+
+/* --- New Chat Button --- */
+.new-chat-btn {
+  width: 100%;
+  padding: 12px 20px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+}
+
+.new-chat-btn:hover {
+  background-color: #0056b3;
+}
+
+/* --- Chat Item Styles --- */
+.chat-item {
+  display: flex;
+  align-items: flex-start; /* Corrected alignment */
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #e9ecef;
+  color: var(--text-color);
+  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.chat-item:hover {
+  background-color: #dee2e6;
+}
+
+.chat-item.active {
+  background-color: #d1e7ff;
+  border: 1px solid var(--secondary-color);
+}
+
+.chat-icon {
+  width: 35px;
+  height: 35px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  border-radius: 50%;
+  margin-right: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.chat-info {
+  flex-grow: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-info h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* --- Truncated and Expanded Text Styles --- */
+.chat-info p {
+  margin: 0;
+  font-size: 11px;
+  color: var(--placeholder-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-info p.expanded {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.toggle-expand-btn {
+  background: none;
+  border: none;
+  color: var(--secondary-color);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  align-self: flex-end;
+}
+
+.toggle-expand-btn:hover {
+  text-decoration: underline;
+}
+
+
 /* --- Message Styling --- */
 .message {
   padding: 18px 22px;
@@ -211,21 +265,105 @@ body {
   line-height: 1.5;
   padding-bottom: 35px;
 }
- 
+
 .user-message {
   align-self: flex-end;
   background-color: #e0f7fa;
   color: var(--text-color);
   border-bottom-right-radius: 4px;
 }
- 
+
 .ai-message {
   align-self: flex-start;
   background-color: #f5f5f5;
   color: var(--text-color);
   border-bottom-left-radius: 4px;
 }
- 
+
+.message-text {
+  /* No specific styles needed here, just a container */
+}
+
+.modified-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--modified-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 5px;
+}
+
+/* --- Message Action Buttons --- */
+.message-actions-new {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: rgba(240, 240, 240, 0.8);
+  backdrop-filter: blur(2px);
+  border-radius: 15px;
+  padding: 2px 5px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.action-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-icon-new {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #707070;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.action-icon-new:hover {
+  color: #333;
+  background-color: #f0f0f0;
+}
+
+.dropdown-menu {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--main-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 5px 0;
+  min-width: 150px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 20;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 14px;
+  text-transform: capitalize;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--bg-color);
+}
+
 /* --- Rating Feedback Message --- */
 .rating-feedback-container {
   position: absolute;
@@ -235,7 +373,7 @@ body {
   pointer-events: none;
   animation: fadeout 2.5s forwards;
 }
- 
+
 .rating-feedback-message {
   background-color: var(--feedback-bg-color);
   color: var(--feedback-text-color);
@@ -245,14 +383,25 @@ body {
   font-weight: 600;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
- 
+
 @keyframes fadeout {
-  0% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-10px); }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
- 
- 
+
+
+/* --- Input Area --- */
 .input-area {
   display: flex;
   flex-direction: column;
@@ -260,12 +409,12 @@ body {
   border-top: 1px solid var(--border-color);
   background-color: var(--main-color);
 }
- 
+
 .input-container {
   display: flex;
   width: 100%;
 }
- 
+
 .input-area input {
   flex-grow: 1;
   padding: 15px 20px;
@@ -277,15 +426,15 @@ body {
   outline: none;
   transition: border-color 0.3s ease;
 }
- 
+
 .input-area input::placeholder {
   color: var(--placeholder-color);
 }
- 
+
 .input-area input:focus {
   border-color: var(--secondary-color);
 }
- 
+
 .input-area button {
   padding: 12px 22px;
   margin-left: 15px;
@@ -298,11 +447,12 @@ body {
   font-size: 16px;
   transition: background-color 0.3s ease;
 }
- 
+
 .input-area button:hover {
   background-color: #0056b3;
 }
- 
+
+
 /* --- Login Page Styles --- */
 .login-container {
   display: flex;
@@ -312,7 +462,7 @@ body {
   width: 100vw;
   background-color: var(--bg-color);
 }
- 
+
 .login-form-container {
   background-color: var(--main-color);
   padding: 60px;
@@ -324,7 +474,7 @@ body {
   text-align: center;
   width: 450px;
 }
- 
+
 .login-icon {
   width: 80px;
   height: 80px;
@@ -337,7 +487,7 @@ body {
   align-items: center;
   font-size: 40px;
 }
- 
+
 .login-form h2 {
   margin-top: 0;
   margin-bottom: 25px;
@@ -345,14 +495,14 @@ body {
   color: var(--text-color);
   font-size: 24px;
 }
- 
+
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
 }
- 
+
 .login-form input {
   padding: 15px 20px;
   border-radius: 10px;
@@ -363,15 +513,15 @@ body {
   outline: none;
   transition: border-color 0.3s ease;
 }
- 
+
 .login-form input::placeholder {
   color: var(--placeholder-color);
 }
- 
+
 .login-form input:focus {
   border-color: var(--secondary-color);
 }
- 
+
 .login-form button {
   padding: 15px 20px;
   border: none;
@@ -383,76 +533,12 @@ body {
   font-size: 16px;
   transition: background-color 0.3s ease;
 }
- 
+
 .login-form button:hover {
   background-color: #0056b3;
 }
- 
-/* --- New Styles for Hover & Dropdowns --- */
-.message-actions {
-  position: absolute;
-  top: -20px;
-  right: 0;
-  display: flex;
-  gap: 10px;
-  z-index: 10;
-}
- 
-.action-menu {
-  position: relative;
-}
- 
-.action-button {
-  width: 30px;
-  height: 30px;
-  background-color: #e9ecef;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s ease;
-}
- 
-.action-button:hover {
-  background-color: #dee2e6;
-}
- 
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--main-color);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 5px 0;
-  min-width: 150px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 20;
-}
- 
-.dropdown-item {
-  padding: 10px 15px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.2s ease;
-}
- 
-.dropdown-item:hover {
-  background-color: var(--bg-color);
-}
- 
-.modified-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--modified-color);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 5px;
-}
- 
+
+
 /* --- Follow-up Questions Styles --- */
 .followup-questions {
   display: flex;
@@ -462,7 +548,7 @@ body {
   width: 100%;
   justify-content: center;
 }
- 
+
 .followup-question-btn {
   padding: 12px 20px;
   border: none;
@@ -477,71 +563,15 @@ body {
   max-width: 30%;
   box-shadow: 0 4px 8px var(--followup-shadow);
 }
- 
+
 .followup-question-btn:hover {
   background-color: #e9ecef;
   transform: translateY(-3px);
   box-shadow: 0 6px 12px var(--followup-shadow);
 }
- 
-.message-actions-new {
-  position: absolute; /* Takes the element out of the layout flow */
-  bottom: 8px;      /* Position it 8px from the bottom of the message bubble */
-  right: 12px;      /* Position it 12px from the right */
-  
-  /* Optional: Add a subtle background and smooth transition */
-  background: rgba(240, 240, 240, 0.8);
-  backdrop-filter: blur(2px);
-  border-radius: 15px;
-  padding: 2px 5px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
 
-  /* Add a fade-in animation */
-  opacity: 1;
-  transition: opacity 0.2s ease-in-out;
-}
-/* --- New Action Buttons Styling --- */
-.message-actions-new {
-  margin-top: 0;
-  padding-top: 0;
-  border-top: none;
-}
- 
-.action-row {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-}
- 
-.action-group {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Spacing between icons */
-}
- 
-.action-icon-new {
-  border: none;
-  background: none;
-  cursor: pointer;
-  padding: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #707070; /* Gray color for the icons */
-  transition: color 0.2s ease, background-color 0.2s ease;
-  border-radius: 5px;
-}
- 
-.action-icon-new:hover {
-  color: #333; /* Darker gray on hover */
-  background-color: #f0f0f0;
-}
- 
-/* Specific styling for the svg icons to ensure they inherit the color */
-.action-icon-new svg {
-  stroke: currentColor;
-}
- /* --- Image Viewer Styles --- */
+
+/* --- Image Viewer Styles --- */
 .image-viewer {
   width: 350px;
   background-color: #f8f9fa;
@@ -580,9 +610,12 @@ body {
   color: #6c757d;
   word-break: break-all;
 }
+
+/* --- Typing Indicator --- */
 .typing-indicator {
   display: inline-block;
 }
+
 .typing-indicator span {
   height: 8px;
   width: 8px;
@@ -592,9 +625,21 @@ body {
   margin: 0 1px;
   animation: a-typing 1.4s infinite;
 }
-.typing-indicator span:nth-child(2) { animation-delay: .2s; }
-.typing-indicator span:nth-child(3) { animation-delay: .4s; }
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: .4s;
+}
+
 @keyframes a-typing {
-  0%, 60%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-4px); }
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+
+  30% {
+    transform: translateY(-4px);
+  }
 }

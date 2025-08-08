@@ -342,7 +342,7 @@ const ChatWindow = ({ messages, onRateMessage, onModifyResponse }) => {
   return (
     <div className="chat-window-container">
       <div className="chat-window-header">
-        <h3 className="header-title">Safety Process AI</h3>
+        <h3 className="header-title">Agentic RAG ChatBot</h3>
       </div>
       <div className="chat-window" ref={chatWindowRef}>
         {messages.map((msg) => (

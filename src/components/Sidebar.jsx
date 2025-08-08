@@ -1,42 +1,36 @@
-// import React, { useState, useEffect } from 'react';
-// import { getAllChats } from '../api/mockApi';
+import React, { useState } from 'react';
 
-// const Sidebar = ({ onSelectChat }) => {
-//   const [chats, setChats] = useState([]);
-//   const DUMMY_USER_ID = "user-123";
+const ChatItem = ({ chat, onSelectChat, activeChatId }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
-//   useEffect(() => {
-//     const fetchChats = async () => {
-//       const response = await getAllChats(DUMMY_USER_ID);
-//       setChats(response.chats);
-//     };
-//     fetchChats();
-//   }, []);
+  const toggleExpand = (e) => {
+    e.stopPropagation(); // Prevents the chat item click from being triggered
+    setIsExpanded(!isExpanded);
+  };
 
-//   return (
-//     <div className="sidebar">
-//       <h2>Conversations</h2>
-//       <div className="chat-list">
-//         {chats.map(chat => (
-//           <div
-//             key={chat.chatId}
-//             className="chat-item"
-//             onClick={() => onSelectChat(chat.chatId)}
-//           >
-//             <div className="chat-icon"></div>
-//             <div className="chat-info">
-//               <h4>{chat.title}</h4>
-//               <p>{chat.last_message}</p>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
+  const lastMessageText = chat.messages?.slice(-1)[0]?.text || 'No messages yet';
+  const shouldShowToggle = lastMessageText.length > 50; // Condition to show the "More/Less" button
 
-// export default Sidebar;
-import React from 'react';
+  return (
+    <div
+      key={chat.id}
+      className={`chat-item ${chat.id === activeChatId ? 'active' : ''}`}
+      onClick={() => onSelectChat(chat.id)}
+    >
+      <div className="chat-info">
+        <h4>{chat.title}</h4>
+        <p className={isExpanded ? 'expanded' : ''}>
+          {lastMessageText}
+        </p>
+        {shouldShowToggle && (
+          <button className="toggle-expand-btn" onClick={toggleExpand}>
+            {isExpanded ? 'Less' : 'More'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const Sidebar = ({ chats, onSelectChat, onNewChat, activeChatId }) => {
   return (
@@ -45,18 +39,12 @@ const Sidebar = ({ chats, onSelectChat, onNewChat, activeChatId }) => {
       <button className="new-chat-btn" onClick={onNewChat}>+ New Chat</button>
       <div className="chat-list">
         {chats.map(chat => (
-          <div
-            key={chat.id}
-            className={`chat-item ${chat.id === activeChatId ? 'active' : ''}`}
-            onClick={() => onSelectChat(chat.id)}
-          >
-            <div className="chat-icon"></div>
-            <div className="chat-info">
-              <h4>{chat.title}</h4>
-              {/* Assuming the last message is available; you might need to adjust based on actual API response */}
-              <p>{chat.messages?.slice(-1)[0]?.text || 'No messages yet'}</p>
-            </div>
-          </div>
+          <ChatItem 
+            key={chat.id} 
+            chat={chat} 
+            onSelectChat={onSelectChat} 
+            activeChatId={activeChatId}
+          />
         ))}
       </div>
     </div>
