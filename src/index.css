@@ -209,6 +209,7 @@ body {
   position: relative;
   font-size: 16px;
   line-height: 1.5;
+  padding-bottom: 35px;
 }
  
 .user-message {
@@ -483,15 +484,27 @@ body {
   box-shadow: 0 6px 12px var(--followup-shadow);
 }
  
- 
+.message-actions-new {
+  position: absolute; /* Takes the element out of the layout flow */
+  bottom: 8px;      /* Position it 8px from the bottom of the message bubble */
+  right: 12px;      /* Position it 12px from the right */
+  
+  /* Optional: Add a subtle background and smooth transition */
+  background: rgba(240, 240, 240, 0.8);
+  backdrop-filter: blur(2px);
+  border-radius: 15px;
+  padding: 2px 5px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  /* Add a fade-in animation */
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
 /* --- New Action Buttons Styling --- */
 .message-actions-new {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #e0e0e0;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
  
 .action-row {
