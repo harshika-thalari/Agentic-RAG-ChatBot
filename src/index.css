@@ -567,3 +567,21 @@ body {
   color: #6c757d;
   word-break: break-all;
 }
+.typing-indicator {
+  display: inline-block;
+}
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  background-color: #9E9E9E;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 1px;
+  animation: a-typing 1.4s infinite;
+}
+.typing-indicator span:nth-child(2) { animation-delay: .2s; }
+.typing-indicator span:nth-child(3) { animation-delay: .4s; }
+@keyframes a-typing {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
